@@ -1,7 +1,7 @@
 /**
  * AnimeWorld Provider v2.0
  * Proxies the anime-world-stremio-addon to fetch anime streams.
- * By Murph Streams ⚡
+ * By Mega Streams ⚡
  */
 
 'use strict';
@@ -74,7 +74,7 @@ async function getStreams(imdbId, mediaType = 'movie', season = null, episode = 
             const name     = rawTitle.startsWith('[') ? `🌸 AnimeWorld | ${rawTitle}` : `🌸 AnimeWorld | ${rawTitle || 'Stream'}`;
             return {
                 name,
-                title: `AnimeWorld · Anime Streaming\nBy Murph Streams ⚡`,
+                title: `AnimeWorld · Anime Streaming\nBy Mega Streams ⚡`,
                 url:   s.url,
                 behaviorHints: {
                     ...((s.behaviorHints || {})),
