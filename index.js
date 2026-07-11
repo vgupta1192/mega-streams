@@ -24,6 +24,8 @@ let fetch;
 try {
     // node-fetch v2 supports CommonJS require
     fetch = require('node-fetch');
+    // Prefer node-fetch as the global fetch to avoid undici/wasm on low-memory hosts
+    try { globalThis.fetch = fetch; } catch (e) { /* ignore */ }
 } catch (e) {
     // fallback to global fetch (Node 18+). If undici causes WASM OOM, install node-fetch
     fetch = global.fetch;

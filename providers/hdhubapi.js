@@ -8,13 +8,18 @@
 
 // ── undici (built-in Node ≥18) for proxy-aware fetch ─────────────────────────
 let undici_fetch, ProxyAgent;
-try {
-    const undici = require('undici');
-    undici_fetch = undici.fetch;
-    ProxyAgent   = undici.ProxyAgent;
-    console.log('[ProxyManager] undici loaded — proxy support ENABLED');
-} catch (e) {
-    console.warn('[ProxyManager] undici not found — proxy support DISABLED, using direct fetch');
+// Avoid requiring built-in undici on low-memory/shared hosts when UNDICI_NO_WASM is set
+if (!process.env.UNDICI_NO_WASM) {
+    try {
+        const undici = require('undici');
+        undici_fetch = undici.fetch;
+        ProxyAgent   = undici.ProxyAgent;
+        console.log('[ProxyManager] undici loaded — proxy support ENABLED');
+    } catch (e) {
+        console.warn('[ProxyManager] undici not found — proxy support DISABLED, using direct fetch');
+    }
+} else {
+    console.warn('[ProxyManager] UNDICI_NO_WASM set — skipping undici require, using direct fetch');
 }
 
 // ── Endpoints ─────────────────────────────────────────────────────────────────
