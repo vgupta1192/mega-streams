@@ -3,7 +3,7 @@
 /**
  * HDHub API Provider v2.0
  * Direct API for HDHub4u and 4KHDHub
- * By Murph Streams ⚡
+ * By Mega Streams ⚡
  */
 
 // ── undici (built-in Node ≥18) for proxy-aware fetch ─────────────────────────
@@ -350,7 +350,7 @@ function buildStream(apiStream, providerName, isTv, season, episode) {
         : '';
     return {
         name:  `🔵 ${providerName} | ${quality} | ${lang}`,
-        title: `${epSuffix.trim()}${size ? ` · ${size}` : ''} · ${server}\nBy Murph Streams ⚡`.trim(),
+        title: `${epSuffix.trim()}${size ? ` · ${size}` : ''} · ${server}\nBy Mega Streams ⚡`.trim(),
         url:   apiStream.url,
         behaviorHints: {
             notWebReady: true,

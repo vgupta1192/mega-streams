@@ -1,6 +1,6 @@
 /*
  * NetMirror plugin v2.0 (fixed – no crypto dependency)
- * By Murph Streams ⚡
+ * By Mega Streams ⚡
  */
 
 const TMDB_API_KEY = "439c478a771f35c05022f9feabcca01c";
@@ -439,7 +439,7 @@ async function getStreams(tmdbId, mediaType = "movie", seasonNum = null, episode
           const label = `🪞 NetMirror | ${quality} | ${platformNames[platform]}`;
           let streamTitle = `${title} ${year ? `(${year})` : ""}`;
           if (mediaType === "tv") streamTitle += ` · S${seasonNum}E${episodeNum}`;
-          streamTitle += `\n🎥 ${quality} · 🔊 ${platformNames[platform]}\nBy Murph Streams ⚡`;
+          streamTitle += `\n🎥 ${quality} · 🔊 ${platformNames[platform]}\nBy Mega Streams ⚡`;
 
           return {
             name: label,

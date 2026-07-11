@@ -1,6 +1,6 @@
 /**
  * KMmovies Provider v2.0 – Stremio addon
- * By Murph Streams ⚡
+ * By Mega Streams ⚡
  */
 
 'use strict';
@@ -118,8 +118,8 @@ async function fetchKMMoviesStreams(title, season, episode) {
 
                     // Name: "🟡 KMmovies | 1080p | Hindi"
                     const name = `🟡 ${PROVIDER_NAME} | ${quality} | ${lang}`;
-                    // Title: "[2.3GB] · Skydrop · By Murph Streams ⚡"
-                    const streamTitle = buildStreamTitle({ size, server }) + '\nBy Murph Streams ⚡';
+                    // Title: "[2.3GB] · Skydrop · By Mega Streams ⚡"
+                    const streamTitle = buildStreamTitle({ size, server }) + '\nBy Mega Streams ⚡';
 
                     console.log(`[KMmovies] Adding movie stream: ${name}, url=${url.substring(0,80)}`);
                     streams.push({
@@ -164,7 +164,7 @@ async function fetchKMMoviesStreams(title, season, episode) {
                                 });
 
                                 const name = `🟡 ${PROVIDER_NAME} | ${quality} | ${lang}`;
-                                const titleWithTag = streamTitle + '\nBy Murph Streams ⚡';
+                                const titleWithTag = streamTitle + '\nBy Mega Streams ⚡';
 
                                 console.log(`[KMmovies] Adding series stream: ${name}, ep=${epName}, url=${epUrl.substring(0,80)}`);
                                 streams.push({
@@ -182,7 +182,7 @@ async function fetchKMMoviesStreams(title, season, episode) {
                                 if (!combUrl || !combUrl.startsWith('http')) continue;
                                 const combSize = info.size;
 
-                                const streamTitle = buildStreamTitle({ size: combSize, server }) + '\nBy Murph Streams ⚡';
+                                const streamTitle = buildStreamTitle({ size: combSize, server }) + '\nBy Mega Streams ⚡';
                                 const name = `🟡 ${PROVIDER_NAME} | ${quality} | ${lang} (Season Pack)`;
 
                                 streams.push({

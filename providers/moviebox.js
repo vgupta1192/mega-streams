@@ -2,7 +2,7 @@
  * MovieBox Provider v5.0 — Worker‑backed (Lightning)
  * Uses Cloudflare Worker: https://moviebox.s4nch1tt.workers.dev
  * No local scraping, no proxy issues. Proxy URLs from Worker.
- * By Murph Streams ⚡
+ * By Mega Streams ⚡
  */
 
 'use strict';
@@ -45,7 +45,7 @@ async function fetchFromWorker(tmdbId, mediaType, season, episode) {
     console.log(`${TAG} Worker → ${url}`);
 
     const res = await fetch(url, {
-        headers: { 'Accept': 'application/json', 'User-Agent': 'MurphAddon/4.3' },
+        headers: { 'Accept': 'application/json', 'User-Agent': 'MegaAddon/4.3' },
         signal: AbortSignal.timeout(12000)
     });
     if (!res.ok) throw new Error(`Worker HTTP ${res.status}`);
@@ -95,7 +95,7 @@ function buildStream(s, isTv, season, episode) {
         if (s.duration_s) meta += ` · ⏱ ${Math.round(s.duration_s / 60)} min`;
         lines.push(meta);
     }
-    lines.push("By Murph Streams ⚡");
+    lines.push("By Mega Streams ⚡");
 
     return {
         name:            streamName,

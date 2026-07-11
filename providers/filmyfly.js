@@ -2,7 +2,7 @@
  * FilmyFly Provider v1.1
  * Uses FilmyFly FastAPI: https://badboysxs-ff.hf.space
  * Provides direct download links with part support for series.
- * By Murph Streams ⚡
+ * By Mega Streams ⚡
  */
 
 'use strict';
@@ -128,7 +128,7 @@ function buildStreamTitle(options) {
     lines.push('⚡ Direct Download');
 
     // Tagline
-    lines.push('By Murph Streams ⚡');
+    lines.push('By Mega Streams ⚡');
 
     return lines.join('\n');
 }

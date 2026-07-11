@@ -2,7 +2,7 @@
  * HindMovie Provider v2.0
  * Uses HindMovie FastAPI: https://badboysxs-hh.hf.space
  * Scrapes hindmovie.ltd with mvlink/hshare bypass via REST API.
- * By Murph Streams ⚡
+ * By Mega Streams ⚡
  */
 
 'use strict';
@@ -85,8 +85,8 @@ function buildStream(row, serverKey, serverUrl, isTv, se, ep) {
     // Server badge
     lines.push(`⚡ ${serverKey}`);
 
-    // By Murph Streams tagline
-    lines.push("By Murph Streams ⚡");
+    // By Mega Streams tagline
+    lines.push("By Mega Streams ⚡");
 
     return {
         name:          streamName,

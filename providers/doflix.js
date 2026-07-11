@@ -1,7 +1,7 @@
 /**
  * DoFlix Provider v2.0 – Updated March 2026
- * Built from the latest DoFlix source, adapted for Murph's Streams.
- * By Murph Streams ⚡
+ * Built from the latest DoFlix source, adapted for Mega's Streams.
+ * By Mega Streams ⚡
  */
 
 'use strict';
@@ -88,7 +88,7 @@ async function getStreams(tmdbId, mediaType = 'movie', season = null, episode = 
                 if (streamUrl && streamUrl !== linkObj.url) {
                     streams.push({
                         name: `🎬 DoFlix | ${linkObj.quality || 'HD'} | Hindi`,
-                        title: `DoFlix ${linkObj.host ? ' · ' + linkObj.host : ''}\nBy Murph Streams ⚡`,
+                        title: `DoFlix ${linkObj.host ? ' · ' + linkObj.host : ''}\nBy Mega Streams ⚡`,
                         url: streamUrl,
                         behaviorHints: {
                             headers: {
