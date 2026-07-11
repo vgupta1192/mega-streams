@@ -7,26 +7,31 @@
  */
 
 // ── undici (built-in Node ≥18) for proxy-aware fetch ─────────────────────────
-let undici_fetch, ProxyAgent;
-// Avoid requiring built-in undici on low-memory/shared hosts when UNDICI_NO_WASM is set
-if (!process.env.UNDICI_NO_WASM) {
+let undici_fetch = null;
+let ProxyAgent = null;
+let directFetch = null;
+
+const useProxy = !process.env.UNDICI_NO_WASM && process.env.HDHUB_PROXY !== '0';
+if (useProxy) {
     try {
         const undici = require('undici');
         undici_fetch = undici.fetch;
         ProxyAgent   = undici.ProxyAgent;
         console.log('[ProxyManager] undici loaded — proxy support ENABLED');
     } catch (e) {
-        console.warn('[ProxyManager] undici not found — proxy support DISABLED, using direct fetch');
+        console.warn('[ProxyManager] undici require failed — proxy support DISABLED, using direct fetch');
     }
 } else {
-    console.warn('[ProxyManager] UNDICI_NO_WASM set — skipping undici require, using direct fetch');
+    console.warn('[ProxyManager] UNDICI_NO_WASM enabled or HDHUB_PROXY disabled — skipping undici require, using direct fetch');
 }
 
-let directFetch = global.fetch;
 try {
     directFetch = require('node-fetch');
 } catch (e) {
-    // If node-fetch is not installed, fallback to global fetch
+    directFetch = global.fetch;
+}
+if (!directFetch) {
+    throw new Error('No fetch implementation available in hdhubapi.js');
 }
 
 // ── Endpoints ─────────────────────────────────────────────────────────────────

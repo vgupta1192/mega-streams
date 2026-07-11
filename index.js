@@ -15,6 +15,9 @@
 
 'use strict';
 
+// Force the low-memory-safe UNDICI_NO_WASM behavior unless explicitly disabled.
+process.env.UNDICI_NO_WASM = process.env.UNDICI_NO_WASM || '1';
+
 const { addonBuilder, getRouter } = require('stremio-addon-sdk');
 const express = require('express');
 const http    = require('http');
@@ -65,6 +68,8 @@ const PUBLIC_BASE = (process.env.PUBLIC_BASE
         ? `https://${process.env.SPACE_HOST}`
         : `http://localhost:${PORT}`
 ).replace(/\/$/, '');
+
+console.log(`[Startup] PUBLIC_BASE=${PUBLIC_BASE} UNDICI_NO_WASM=${process.env.UNDICI_NO_WASM}`);
 
 // ==================== LOGGING ====================
 const LOG_BUFFER_MAX = 500;
