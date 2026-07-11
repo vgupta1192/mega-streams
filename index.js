@@ -224,19 +224,20 @@ async function processQueue() {
 }
 
 // ==================== KEEP-ALIVE AGENTS ====================
+// Lower socket counts for shared/low-memory seedboxes
 const httpAgent = new http.Agent({
-    keepAlive: true, maxSockets: 1024, maxFreeSockets: 256,
+    keepAlive: true, maxSockets: 128, maxFreeSockets: 64,
     keepAliveMsecs: 15000, timeout: 60000, scheduling: 'fifo'
 });
 const httpsAgent = new https.Agent({
-    keepAlive: true, maxSockets: 1024, maxFreeSockets: 256,
+    keepAlive: true, maxSockets: 128, maxFreeSockets: 64,
     keepAliveMsecs: 15000, timeout: 60000,
     rejectUnauthorized: false, scheduling: 'fifo'
 });
 
-// Dedicated agent for heavy providers
+// Dedicated agent for heavy providers (reduced)
 const hdHubAgent = new https.Agent({
-    keepAlive: true, maxSockets: 256, maxFreeSockets: 64,
+    keepAlive: true, maxSockets: 64, maxFreeSockets: 16,
     keepAliveMsecs: 15000, timeout: 90000, rejectUnauthorized: false
 });
 
