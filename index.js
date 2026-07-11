@@ -19,6 +19,15 @@ const { addonBuilder, getRouter } = require('stremio-addon-sdk');
 const express = require('express');
 const http    = require('http');
 const https   = require('https');
+// Prefer a pure-JS fetch implementation to avoid Node's built-in undici WASM path
+let fetch;
+try {
+    // node-fetch v2 supports CommonJS require
+    fetch = require('node-fetch');
+} catch (e) {
+    // fallback to global fetch (Node 18+). If undici causes WASM OOM, install node-fetch
+    fetch = global.fetch;
+}
 const { URL } = require('url');
 const zlib    = require('zlib');
 const path    = require('path');
