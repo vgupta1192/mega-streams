@@ -1,5 +1,4 @@
 /**
- * Murph's Multi-Provider Stremio Addon — TURBO EDITION v7.1
  *
  * Providers:
  *   • MovieBox   (mb)  – Cloudflare Worker
@@ -12,7 +11,6 @@
  *   • HindMovie  (hm)  – HindMovie API
  *   • FilmyFly   (ff)  – Direct Downloads
  *
- * By Murph Streams ⚡ | Telegram: @S4NCHITT
  */
 
 'use strict';
@@ -288,14 +286,14 @@ function buildManifestDesc(providers) {
         const p = ALL_PROVIDERS.find(x => x.id === id);
         return p ? `${p.emoji} ${p.name}` : id;
     }).join(' · ');
-    return `${names} | By Murph Streams ⚡ | v7.1 | Telegram: @S4NCHITT`;
+    return `${names} | By  Mega Streams ⚡`;
 }
 
 // ==================== MANIFEST ====================
 const BASE_MANIFEST = {
-    id:          'community.murph.multi.provider',
+    id:          'community.mega.multi.provider',
     version:     '7.1.0',
-    name:        "🎬 By Murph Streams ⚡",
+    name:        "🎬 By Mega Streams ⚡",
     logo:        'https://i.ibb.co/V0pSydpz/Secretary-Kim04-00476-1.jpg',
     resources:   ['stream'],
     types:       ['movie', 'series'],
@@ -1356,12 +1354,12 @@ app.listen(PORT, '0.0.0.0', () => {
     const configureUrl = `${PUBLIC_BASE}/configure`;
     console.log(`
 ╔═══════════════════════════════════════════════════════════╗
-║   By Murph Streams v7.1.0 — TURBO EDITION ⚡               ║
+║   By Mega Streams v7.1.0 — TURBO EDITION ⚡               ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  Install   : ${installUrl.padEnd(48)} ║
 ║  Configure : ${configureUrl.padEnd(48)} ║
 ║  Providers : MB·NM·DF·HH·KHD·KM·AW·HM·FF                 ║
 ║  API Mgmt  : Enabled (Circuit Breaker + Queue)           ║
-║  By Murph Streams ⚡ | Telegram: @S4NCHITT               ║
+║  By Mega Streams ⚡ | Telegram: @S4NCHITT               ║
 ╚═══════════════════════════════════════════════════════════╝`);
 });
