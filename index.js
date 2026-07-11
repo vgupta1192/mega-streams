@@ -669,16 +669,20 @@ async function buildStreams(imdbId, mediaType, seasonVal, episodeVal, providerId
     }
 
     const valid = deduplicateStreams(streams);
-    
+
     // ─────────────────────────────────────────────────────────────────────────────
-    // PATCH: Mark ALL streams as web-ready (notWebReady: false) so Stremio displays them.
-    // This bypasses the notWebReady filter and allows Stremio UI to show all streams.
+    // Proxy all returned stream URLs through the addon, then mark them web-ready.
+    // This ensures playback is routed via the seedbox and avoids client-side blocks.
     // ─────────────────────────────────────────────────────────────────────────────
     for (const stream of valid) {
+        if (stream.url && !stream.url.includes('/proxy?')) {
+            const headers = (stream.behaviorHints && stream.behaviorHints.headers) ? stream.behaviorHints.headers : {};
+            stream.url = proxyUrl(stream.url, headers);
+        }
         stream.behaviorHints = stream.behaviorHints || {};
         stream.behaviorHints.notWebReady = false;
     }
-    
+
     console.log(`[Addon] Returning ${valid.length} streams (deduped) ✓ ALL MARKED WEB-READY\n`);
     provCache.set(combinedKey, valid);
     return valid;
