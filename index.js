@@ -669,7 +669,17 @@ async function buildStreams(imdbId, mediaType, seasonVal, episodeVal, providerId
     }
 
     const valid = deduplicateStreams(streams);
-    console.log(`[Addon] Returning ${valid.length} streams (deduped)\n`);
+    
+    // ─────────────────────────────────────────────────────────────────────────────
+    // PATCH: Mark ALL streams as web-ready (notWebReady: false) so Stremio displays them.
+    // This bypasses the notWebReady filter and allows Stremio UI to show all streams.
+    // ─────────────────────────────────────────────────────────────────────────────
+    for (const stream of valid) {
+        stream.behaviorHints = stream.behaviorHints || {};
+        stream.behaviorHints.notWebReady = false;
+    }
+    
+    console.log(`[Addon] Returning ${valid.length} streams (deduped) ✓ ALL MARKED WEB-READY\n`);
     provCache.set(combinedKey, valid);
     return valid;
 }

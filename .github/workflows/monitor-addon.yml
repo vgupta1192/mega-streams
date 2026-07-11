@@ -1,0 +1,170 @@
+name: 🔍 Monitor & Auto-Restart Mega Streams Addon
+
+on:
+  schedule:
+    # Check every 10 minutes
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'check'
+        type: choice
+        options:
+          - check
+          - restart
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    name: Health Check & Auto-Restart
+
+    steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🔌 Check Manifest Endpoint
+        id: manifest_check
+        continue-on-error: true
+        run: |
+          MANIFEST_URL="https://vgupta1192.peak.usbx.me/mega-streams/manifest.json"
+          HTTP_CODE=$(curl -s -o /tmp/manifest.json -w "%{http_code}" "$MANIFEST_URL")
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "manifest_status=ok" >> $GITHUB_OUTPUT
+            echo "✅ Manifest endpoint OK (HTTP $HTTP_CODE)"
+            cat /tmp/manifest.json | head -c 200
+          else
+            echo "manifest_status=down" >> $GITHUB_OUTPUT
+            echo "❌ Manifest endpoint DOWN (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+
+      - name: 🏥 Check Health Endpoint
+        id: health_check
+        continue-on-error: true
+        run: |
+          HEALTH_URL="https://vgupta1192.peak.usbx.me/mega-streams/health"
+          HTTP_CODE=$(curl -s -o /tmp/health.json -w "%{http_code}" "$HEALTH_URL")
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "health_status=ok" >> $GITHUB_OUTPUT
+            echo "✅ Health endpoint OK (HTTP $HTTP_CODE)"
+            cat /tmp/health.json | jq '.' 2>/dev/null || cat /tmp/health.json
+          else
+            echo "health_status=down" >> $GITHUB_OUTPUT
+            echo "❌ Health endpoint DOWN (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+
+      - name: 🚨 Determine if Addon is Down
+        id: determine_status
+        run: |
+          MANIFEST=${{ steps.manifest_check.outputs.manifest_status }}
+          HEALTH=${{ steps.health_check.outputs.health_status }}
+          
+          if [[ "$MANIFEST" == "ok" ]] && [[ "$HEALTH" == "ok" ]]; then
+            echo "addon_status=online" >> $GITHUB_OUTPUT
+            echo "🟢 Addon is ONLINE"
+          else
+            echo "addon_status=offline" >> $GITHUB_OUTPUT
+            echo "🔴 Addon is OFFLINE"
+          fi
+
+      - name: 🔄 Restart Addon via SSH (if down)
+        id: ssh_restart
+        if: steps.determine_status.outputs.addon_status == 'offline' || github.event.inputs.action == 'restart'
+        continue-on-error: true
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          
+          echo "🔄 Connecting to seedbox and restarting app..."
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'SSHEOF'
+            cd ~/stremio-addons/mega-streams
+            export PUBLIC_BASE="https://vgupta1192.peak.usbx.me/mega-streams"
+            export PORT=7860
+            export UNDICI_NO_WASM=1
+            
+            echo "📍 Current status:"
+            pm2 status mega-streams || echo "Not found in pm2"
+            
+            echo "🔄 Restarting addon..."
+            PUBLIC_BASE="$PUBLIC_BASE" PORT="$PORT" UNDICI_NO_WASM=1 pm2 restart mega-streams --update-env || pm2 start index.js --name mega-streams -- --update-env
+            
+            echo "⏳ Waiting for app to start..."
+            sleep 5
+            
+            echo "📊 New status:"
+            pm2 status mega-streams
+            
+            echo "📝 Recent logs:"
+            pm2 logs mega-streams --lines 20 --nostream
+          SSHEOF
+          
+          echo "restart_status=success" >> $GITHUB_OUTPUT
+
+      - name: ✅ Verify Recovery
+        if: steps.ssh_restart.outcome == 'success'
+        run: |
+          sleep 3
+          echo "Verifying addon recovery..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://vgupta1192.peak.usbx.me/mega-streams/health")
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Addon recovered successfully!"
+          else
+            echo "⚠️  Recovery check returned HTTP $HTTP_CODE (may still be starting)"
+          fi
+
+      - name: 📢 Notify on Slack (Optional)
+        if: always()
+        continue-on-error: true
+        run: |
+          MANIFEST=${{ steps.manifest_check.outputs.manifest_status }}
+          HEALTH=${{ steps.health_check.outputs.health_status }}
+          ADDON_STATUS=${{ steps.determine_status.outputs.addon_status }}
+          RESTART_STATUS=${{ steps.ssh_restart.outputs.restart_status }}
+          
+          if [[ "$ADDON_STATUS" == "offline" ]]; then
+            STATUS_EMOJI="🔴"
+            STATUS_TEXT="DOWN"
+            if [[ "$RESTART_STATUS" == "success" ]]; then
+              STATUS_TEXT="DOWN → RESTARTED ✅"
+              STATUS_EMOJI="🟡"
+            fi
+          else
+            STATUS_EMOJI="🟢"
+            STATUS_TEXT="ONLINE"
+          fi
+          
+          # Optional: Replace webhook URL with your Slack webhook if you want notifications
+          # curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+          #   -H 'Content-Type: application/json' \
+          #   -d "{\"text\": \"$STATUS_EMOJI Mega Streams Addon is $STATUS_TEXT\nManifest: $MANIFEST | Health: $HEALTH\"}"
+          
+          echo "Status: $STATUS_EMOJI $STATUS_TEXT"
+
+      - name: 📊 Create Summary
+        if: always()
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          # 🎬 Mega Streams Addon Health Report
+          
+          | Endpoint | Status |
+          |----------|--------|
+          | Manifest | ${{ steps.manifest_check.outputs.manifest_status }} |
+          | Health   | ${{ steps.health_check.outputs.health_status }} |
+          | Overall  | ${{ steps.determine_status.outputs.addon_status }} |
+          
+          ## Action Taken
+          - Restart attempted: ${{ steps.ssh_restart.outcome }}
+          
+          ## Timestamps
+          - Check time: $(date -u)
+          - Workflow: \`${{ github.workflow }}\`
+          - Trigger: \`${{ github.event_name }}\`
+          EOF
