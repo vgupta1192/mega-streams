@@ -1,7 +1,7 @@
 {
-  "name": "murph-multi-provider-addon",
+  "name": "mega-multi-provider-addon",
   "version": "7.0.0",
-  "description": "Murph's Streams - Premium Multi-Provider Stremio Addon with 8+ providers",
+  "description": "Mega Streams - Premium Multi-Provider Stremio Addon with 8+ providers",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
