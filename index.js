@@ -69,7 +69,15 @@ const PUBLIC_BASE = (process.env.PUBLIC_BASE
         : `http://localhost:${PORT}`
 ).replace(/\/$/, '');
 
-console.log(`[Startup] PUBLIC_BASE=${PUBLIC_BASE} UNDICI_NO_WASM=${process.env.UNDICI_NO_WASM}`);
+const PUBLIC_PATH = (() => {
+    try {
+        return new URL(PUBLIC_BASE).pathname.replace(/\/$/, '') || '';
+    } catch {
+        return '';
+    }
+})();
+
+console.log(`[Startup] PUBLIC_BASE=${PUBLIC_BASE} PUBLIC_PATH=${PUBLIC_PATH || '/'} UNDICI_NO_WASM=${process.env.UNDICI_NO_WASM}`);
 
 // ==================== LOGGING ====================
 const LOG_BUFFER_MAX = 500;
@@ -711,6 +719,17 @@ app.get('/configure', (req, res) => {
 app.get('/:config/configure', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'configure.html'));
 });
+
+if (PUBLIC_PATH && PUBLIC_PATH !== '/') {
+    app.use((req, res, next) => {
+        if (req.url === PUBLIC_PATH) {
+            req.url = '/';
+        } else if (req.url.startsWith(PUBLIC_PATH + '/')) {
+            req.url = req.url.slice(PUBLIC_PATH.length) || '/';
+        }
+        next();
+    });
+}
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {

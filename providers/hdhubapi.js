@@ -105,7 +105,7 @@ let proxyIdx        = 0;
 let proxyRefreshing = false;
 
 async function fetchProxyList() {
-    const res = await fetch('https://free-proxy-list.net/en/anonymous-proxy.html', {
+    const res = await directFetch('https://free-proxy-list.net/en/anonymous-proxy.html', {
         credentials: 'omit',
         headers: {
             'User-Agent':                'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0',
