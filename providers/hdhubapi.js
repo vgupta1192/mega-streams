@@ -22,6 +22,13 @@ if (!process.env.UNDICI_NO_WASM) {
     console.warn('[ProxyManager] UNDICI_NO_WASM set — skipping undici require, using direct fetch');
 }
 
+let directFetch = global.fetch;
+try {
+    directFetch = require('node-fetch');
+} catch (e) {
+    // If node-fetch is not installed, fallback to global fetch
+}
+
 // ── Endpoints ─────────────────────────────────────────────────────────────────
 const API_BASE = 'https://hdhub.thevolecitor.qzz.io';
 
@@ -209,7 +216,7 @@ async function httpGet(url, timeoutMs = 18000) {
         }
     }
 
-    return fetch(url, { headers, signal: AbortSignal.timeout(timeoutMs) });
+    return directFetch(url, { headers, signal: AbortSignal.timeout(timeoutMs) });
 }
 
 // ── Fetch raw data with retry + multi-config fallback ─────────────────────────
