@@ -48,9 +48,11 @@ const hindmovie   = require('./providers/hindmovie');
 const filmyfly    = require('./providers/filmyfly');
 
 const PORT        = parseInt(process.env.PORT || '7860');
-const PUBLIC_BASE = (process.env.SPACE_HOST
-    ? `https://${process.env.SPACE_HOST}`
-    : `http://localhost:${PORT}`
+const PUBLIC_BASE = (process.env.PUBLIC_BASE
+    ? process.env.PUBLIC_BASE
+    : process.env.SPACE_HOST
+        ? `https://${process.env.SPACE_HOST}`
+        : `http://localhost:${PORT}`
 ).replace(/\/$/, '');
 
 // ==================== LOGGING ====================
